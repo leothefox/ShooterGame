@@ -22,5 +22,11 @@ protected:
 private:
 	void MoveForBackwards(float AxisValue);
 	void MoveSideways(float AxisValue);
+	void MoveForBackwardsRate(float AxisValue);
+	void MoveSidewaysRate(float AxisValue);
+	void LookUpDownRate(float AxisValue);
+	void LookSidewaysRate(float AxisValue);
 
+	UPROPERTY(EditAnywhere)
+	float RotationRate = 10.f;
 };

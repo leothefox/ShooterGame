@@ -28,6 +28,12 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAxis(TEXT("LookUpDown"), this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis(TEXT("LookSideways"), this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent:: IE_Pressed, this, &ACharacter::Jump);
+
+	// Controller axis rate
+	PlayerInputComponent->BindAxis(TEXT("MoveForBackwardsRate"), this, &AShooterCharacter::MoveForBackwardsRate);
+	PlayerInputComponent->BindAxis(TEXT("MoveSidewaysRate"), this, &AShooterCharacter::MoveSidewaysRate);
+	PlayerInputComponent->BindAxis(TEXT("LookUpDownRate"), this, &AShooterCharacter::LookUpDownRate);
+	PlayerInputComponent->BindAxis(TEXT("LookSidewaysRate"), this, &AShooterCharacter::LookSidewaysRate);
 }
 
 void AShooterCharacter::MoveForBackwards(float AxisValue)
@@ -38,4 +44,24 @@ void AShooterCharacter::MoveForBackwards(float AxisValue)
 void AShooterCharacter::MoveSideways(float AxisValue)
 {
 	AddMovementInput(GetActorRightVector() * AxisValue);
+}
+
+void AShooterCharacter::MoveForBackwardsRate(float AxisValue)
+{
+	AddMovementInput(GetActorForwardVector() * AxisValue * RotationRate * GetWorld()->GetDeltaSeconds());
+}
+
+void AShooterCharacter::MoveSidewaysRate(float AxisValue)
+{
+	AddMovementInput(GetActorRightVector() * AxisValue * RotationRate * GetWorld()->GetDeltaSeconds());
+}
+
+void AShooterCharacter::LookUpDownRate(float AxisValue)
+{
+	AddControllerPitchInput(AxisValue * RotationRate * GetWorld()->GetDeltaSeconds());
+}
+
+void AShooterCharacter::LookSidewaysRate(float AxisValue)
+{
+	AddControllerYawInput(AxisValue * RotationRate * GetWorld()->GetDeltaSeconds());
 }
