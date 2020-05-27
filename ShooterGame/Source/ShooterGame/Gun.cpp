@@ -39,6 +39,20 @@ void AGun::PullTrigger()
 	FRotator PawnRot;
 	OwnerController->GetPlayerViewPoint(OUT PawnLoc, OUT PawnRot);
 
-	DrawDebugCamera(GetWorld(), PawnLoc, PawnRot, 90, 2, FColor::Red, true);
+	FVector End = PawnLoc + PawnRot.Vector() * MaxRange;
+
+	FHitResult Hit;
+	bool bSuccess = GetWorld()->LineTraceSingleByChannel(Hit, PawnLoc, End, ECollisionChannel::ECC_GameTraceChannel1);
+	if (bSuccess)
+	{
+		FVector ShotDir = -PawnRot.Vector();
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect,Hit.Location, ShotDir.Rotation());		
+		AActor* ActorHit = Hit.GetActor();
+		if (ActorHit != nullptr)
+		{
+			FPointDamageEvent DamageEvent(DamageAmount, Hit, ShotDir, nullptr);
+			ActorHit->TakeDamage(DamageAmount, DamageEvent, OwnerController, this);
+		}		
+	}	
 }
 
