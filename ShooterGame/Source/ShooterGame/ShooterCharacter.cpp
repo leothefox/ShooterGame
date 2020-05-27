@@ -14,6 +14,9 @@ void AShooterCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	Gun = GetWorld()->SpawnActor<AGun>(GunClass);
+	GetMesh()->HideBoneByName(TEXT("weapon_r"), EPhysBodyOp::PBO_None);
+	Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket"));
+	Gun->SetOwner(this);
 }
 
 
@@ -33,10 +36,11 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent:: IE_Pressed, this, &ACharacter::Jump);
 
 	// Controller axis rate
-	PlayerInputComponent->BindAxis(TEXT("MoveForBackwardsRate"), this, &AShooterCharacter::MoveForBackwardsRate);
-	PlayerInputComponent->BindAxis(TEXT("MoveSidewaysRate"), this, &AShooterCharacter::MoveSidewaysRate);
 	PlayerInputComponent->BindAxis(TEXT("LookUpDownRate"), this, &AShooterCharacter::LookUpDownRate);
 	PlayerInputComponent->BindAxis(TEXT("LookSidewaysRate"), this, &AShooterCharacter::LookSidewaysRate);
+
+	// Gun firing Binding
+	PlayerInputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Pressed, this, &AShooterCharacter::FireWeapon);
 }
 
 void AShooterCharacter::MoveForBackwards(float AxisValue)
@@ -49,16 +53,6 @@ void AShooterCharacter::MoveSideways(float AxisValue)
 	AddMovementInput(GetActorRightVector() * AxisValue);
 }
 
-void AShooterCharacter::MoveForBackwardsRate(float AxisValue)
-{
-	AddMovementInput(GetActorForwardVector() * AxisValue * RotationRate * GetWorld()->GetDeltaSeconds());
-}
-
-void AShooterCharacter::MoveSidewaysRate(float AxisValue)
-{
-	AddMovementInput(GetActorRightVector() * AxisValue * RotationRate * GetWorld()->GetDeltaSeconds());
-}
-
 void AShooterCharacter::LookUpDownRate(float AxisValue)
 {
 	AddControllerPitchInput(AxisValue * RotationRate * GetWorld()->GetDeltaSeconds());
@@ -67,4 +61,9 @@ void AShooterCharacter::LookUpDownRate(float AxisValue)
 void AShooterCharacter::LookSidewaysRate(float AxisValue)
 {
 	AddControllerYawInput(AxisValue * RotationRate * GetWorld()->GetDeltaSeconds());
+}
+
+void AShooterCharacter::FireWeapon()
+{
+	Gun->PullTrigger();
 }

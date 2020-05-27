@@ -3,6 +3,8 @@
 
 #include "Gun.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
 
 AGun::AGun()
 {
@@ -22,5 +24,21 @@ void AGun::BeginPlay()
 void AGun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void AGun::PullTrigger()
+{
+	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, Mesh, TEXT("MuzzleFlashSocket"));
+
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	if (OwnerPawn == nullptr) { return; }
+	AController* OwnerController = OwnerPawn->GetController();
+	if (OwnerController == nullptr) { return; }
+
+	FVector PawnLoc;
+	FRotator PawnRot;
+	OwnerController->GetPlayerViewPoint(OUT PawnLoc, OUT PawnRot);
+
+	DrawDebugCamera(GetWorld(), PawnLoc, PawnRot, 90, 2, FColor::Red, true);
 }
 

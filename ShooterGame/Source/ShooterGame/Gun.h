@@ -14,6 +14,7 @@ class SHOOTERGAME_API AGun : public AActor
 public:	
 	AGun();
 	virtual void Tick(float DeltaTime) override;
+	void PullTrigger();
 
 protected:
 	virtual void BeginPlay() override;
@@ -24,5 +25,7 @@ private:
 	USceneComponent* Root;
 	UPROPERTY(VisibleAnywhere)
 	USkeletalMeshComponent* Mesh;
+	UPROPERTY(EditAnywhere)
+	UParticleSystem* MuzzleFlash;
 	
 };
